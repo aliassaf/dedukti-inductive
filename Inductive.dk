@@ -1,0 +1,39 @@
+(; Formalization of algebraic inductive types of Pierre-Évariste Dagand ;)
+
+#NAME Inductive.
+
+U := Logic.U.
+T := Logic.T.
+
+(; An inductive specification describes a strictly increasing operator ;)
+
+Spec : Type.
+
+self : Spec.
+const : a : U -> Spec.
+empty : Spec.
+unit : Spec.
+and : Spec -> Spec -> Spec.
+or : Spec -> Spec -> Spec.
+forall : a : U -> (T a -> Spec) -> Spec.
+exists : a : U -> (T a -> Spec) -> Spec.
+
+(; Interpretation of the specification as an operator ;)
+
+apply : Spec -> U -> U.
+
+[b : U] apply self b --> b.
+[b : U, a : U] apply (const a) b --> a.
+[b : U] apply empty b --> Logic.empty.
+[b : U] apply unit b --> Logic.unit.
+[b : U, i : Spec, j : Spec] apply (or i j) b --> Logic.or (apply i b) (apply j b).
+[b : U, i : Spec, j : Spec] apply (and i j) b --> Logic.and (apply i b) (apply j b).
+[b : U, a : U, i : (T a -> Spec)] apply (forall a i) b --> Logic.forall a (x : T a => apply (i x) b).
+[b : U, a : U, i : (T a -> Spec)] apply (exists a i) b --> Logic.exists a (x : T a => apply (i x) b).
+
+(; An inductive is the fixpoint of the operator ;)
+
+ind : Spec -> U.
+
+constr : i : Spec -> T (apply i (ind i)) -> T (ind i).
+

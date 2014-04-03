@@ -1,0 +1,77 @@
+#NAME Monad.
+
+U := Logic.U.
+T := Logic.T.
+
+Spec := Inductive.Spec.
+
+freeSpec : Spec -> U -> Spec.
+[ i : Spec, a : U ] freeSpec i a --> Inductive.or (Inductive.const a) i.
+
+free : Spec -> U -> U.
+[ i : Spec, a : U ] free i a --> Inductive.ind (freeSpec i a).
+
+i : Spec.
+
+return : a : U -> T a -> T (free i a).
+[ a : U, x : T a ]
+  return a x -->
+  Inductive.constr (freeSpec i a)
+    (Logic.inj1 a (Inductive.apply i (free i a)) x).
+
+fmap : a : U -> b : U -> (T a -> T b) -> T (free i a) -> T (free i b).
+
+join : a : U -> T (free i (free i a)) -> T (free i a).
+
+bind : a : U -> b : U -> T (free i a) -> (T a -> T (free i b)) -> T (free i b).
+
+id : a : U -> T a -> T a.
+[a : U, x : T a] id a x --> x.
+
+(; map-id ;)
+(; We cannot match lambdas yet so we cannot write
+[ a : U, xs : T (free i a) ] fmap a a (x : T a => x) xs --> xs. ;)
+[ a : U, xs : T (free i a) ] fmap a a id xs --> xs.
+
+(; map-comp ;)
+[ a : U, b : U, c : U, xs : T (free i a), f : T b -> T c, g : T a -> T b ]
+  fmap b c f (fmap a b g xs) --> fmap a c (x : T a => f (g x)) xs.
+
+(; Example with swap ;)
+
+swap : a : U -> b : U -> z : T (Logic.and a b) -> T (Logic.and b a).
+[ a : U, b : U, x : T a, y : T b ]
+  swap a b (Logic.pair a b x y) --> Logic.pair b a y x.
+
+(; With surjective paring this would be free ;)
+[ a : U, b : U, z : T (Logic.and a b) ] swap b a (swap a b z) --> z.
+
+(; no:  fmap _ _ (x: _ => swap _ _ (swap _ _ x)) xs /= fmap id xs /= xs ;)
+
+a : U.
+b : U.
+xs : T (free i (Logic.and a b)).
+ab := Logic.and a b.
+ba := Logic.and b a.
+
+#CONV
+  (fmap ba ab (swap b a) (fmap ab ba (swap a b) xs)),
+  (fmap ab ab (x : T ab => swap b a (swap a b x)) xs).
+
+
+(; bind-left-id ;)
+[ a : U, b : U, x : T a, f : (T a -> T (free i b)) ]
+  bind a b (return a x) f --> f x.
+
+(; bind-right-id ;)
+[ a : U, xs : T (free i a) ]
+  bind a a xs (return a) --> xs.
+
+(; bind-compose ;)
+[ a : U, b : U, c : U, xs : T (free i a),
+  f : (T b -> T (free i c)),
+  g : (T a -> T (free i b)) ]
+  bind b c (bind a b xs g) f -->
+  bind a c xs (xs : T a => (bind b c (g xs) f)).
+
+

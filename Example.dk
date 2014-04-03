@@ -1,0 +1,21 @@
+#NAME Example.
+
+U := Logic.U.
+T := Logic.T.
+
+(; Natural numbers ;)
+
+nat_spec : Inductive.Spec :=
+  Inductive.or Inductive.unit Inductive.self.
+
+nat := Inductive.ind nat_spec.
+
+Nat := T nat.
+
+z : Nat :=
+  Inductive.constr nat_spec (Logic.inj1 Logic.unit nat Logic.tt).
+s : Nat -> Nat :=
+  n : Nat => Inductive.constr nat_spec (Logic.inj2 Logic.unit nat n).
+
+(; Lists ;)
+
