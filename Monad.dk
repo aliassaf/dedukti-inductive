@@ -31,7 +31,7 @@ id : a : U -> T a -> T a.
 (; map-id ;)
 (; We cannot match lambdas yet so we cannot write
 [ a : U, xs : T (free i a) ] fmap a a (x : T a => x) xs --> xs. ;)
-[ a : U, xs : T (free i a) ] fmap a a id xs --> xs.
+[ a : U, xs : T (free i a) ] fmap a a (id a) xs --> xs.
 
 (; map-comp ;)
 [ a : U, b : U, c : U, xs : T (free i a), f : T b -> T c, g : T a -> T b ]
