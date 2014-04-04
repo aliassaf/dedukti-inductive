@@ -1,2 +1,3 @@
 *.dko
-
+.bkp/
+.depend
