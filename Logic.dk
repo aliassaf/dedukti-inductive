@@ -38,16 +38,25 @@ or : a : U -> b : U -> U.
 inj1 : a : U -> b : U -> T a -> T (or a b).
 inj2 : a : U -> b : U -> T b -> T (or a b).
 
-case : a : U -> b : U -> c : (T (or a b) -> U) ->
-  (x : T a -> T (c (inj1 a b x))) -> (y : T b -> T (c (inj2 a b y))) -> z : T (or a b) -> T (c z).
+case : a : U ->
+       b : U ->
+       c : (T (or a b) -> U) ->
+       (x : T a -> T (c (inj1 a b x))) ->
+       (y : T b -> T (c (inj2 a b y))) ->
+       z : T (or a b) ->
+       T (c z).
 
 [ a : U, b : U, c : (T (or a b) -> U),
-  f : (x : T a -> T (c (inj1 a b x))), g : (y : T b -> T (c (inj2 a b y))), x : T a
-] case a b c f g (inj1 a b x) --> f x.
+  f : (x : T a -> T (c (inj1 a b x))),
+  g : (y : T b -> T (c (inj2 a b y))),
+  x : T a ]
+    case a b c f g (inj1 a b x) --> f x.
 
 [ a : U, b : U, c : (T (or a b) -> U),
-  f : (x : T a -> T (c (inj1 a b x))), g : (y : T b -> T (c (inj2 a b y))), y : T b
-] case a b c f g (inj2 a b y) --> g y.
+  f : (x : T a -> T (c (inj1 a b x))),
+  g : (y : T b -> T (c (inj2 a b y))),
+  y : T b ]
+    case a b c f g (inj2 a b y) --> g y.
 
 (; Universal quantification ;)
 
